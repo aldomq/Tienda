@@ -1,87 +1,113 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Fragmentos</title>
-</head>
-<body>
+    <head>
+        <title>Fragmentos</title>
+    </head>
+    <body>
 
-    <!-- fragmento 1 mostrar categorias en tabs -->
-    <section th:fragment="tabs" class="py-3 mb-4">
-        <div class="d-flex justify-content-center px-5">
-            <ul class="nav nav-underline">
-                <li class="nav-item">
-                    <a class="nav-link"
-                       aria-current="page"
-                       th:href="@{/}">
-                        [[#{pruebas.todas}]]
-                    </a>
-                </li>
+        <!-- fragmento 1 mostrar categorias en tabs -->
+        <section th:fragment="tabs" class="py-3 mb-4">
+            <div class="d-flex justify-content-center px-5">
+                <ul class="nav nav-underline">
+                    <li class="nav-item">
+                        <a class="nav-link"
+                           aria-current="page"
+                           th:href="@{/}">
+                            [[#{pruebas.todas}]]
+                        </a>
+                    </li>
 
-                <li th:each="c : ${categorias}" class="nav-item">
-                    <a class="nav-link"
-                       th:href="@{/consultas/{idCategoria}(idCategoria=${c.idCategoria})}">
-                        [[${c.descripcion}]]
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </section>
+                    <li th:each="c : ${categorias}" class="nav-item">
+                        <a class="nav-link"
+                           th:href="@{/consultas/{idCategoria}(idCategoria=${c.idCategoria})}">
+                            [[${c.descripcion}]]
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </section>
 
-    <!-- fragmento 2 mostrar productos en tarjetas -->
-    <section th:fragment="tarjetas" class="container py-4">
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-4">
-            <div class="col" th:each="p : ${productos}">
-                <div class="card h-100 shadow-sm">
+        <!-- fragmento 2 mostrar productos en tarjetas -->
+        <section th:fragment="tarjetas" class="container py-4">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-4">
+                <div class="col" th:each="p : ${productos}">
+                    <div class="card h-100 shadow-sm">
 
-                    <div class="d-flex justify-content-center align-items-center bg-light" style="height: 200px;">
-                        <img th:src="${p.rutaImagen}"
-                             class="img-fluid"
-                             th:alt="${p.descripcion}"
-                             style="max-height: 100%; object-fit: contain;">
-                    </div>
-
-                    <div class="card-header bg-white">
-                        <h5 class="card-title text-center text-truncate mb-0">
-                            [[${p.descripcion}]]
-                        </h5>
-                    </div>
-
-                    <div class="card-body d-flex flex-column">
-                        <p class="card-text text-muted text-truncate">
-                            [[${p.detalle}]]
-                        </p>
-                    </div>
-
-                    <div class="card-footer bg-white d-flex justify-content-between align-items-center">
-                        <div class="fw-bold">
-                            <span class="text-success h5">
-                                [[${#numbers.formatCurrency(p.precio)}]]
-                            </span>
-
-                            <span th:if="${p.existencias > 0}" class="badge text-bg-success h5">
-                                [[${p.existencias}]] unidades
-                            </span>
-
-                            <span th:if="${p.existencias == 0}" class="badge text-bg-danger h5">
-                                Agotado
-                            </span>
+                        <div class="d-flex justify-content-center align-items-center bg-light" style="height: 200px;">
+                            <img th:src="${p.rutaImagen}"
+                                 class="img-fluid"
+                                 th:alt="${p.descripcion}"
+                                 style="max-height: 100%; object-fit: contain;">
                         </div>
 
-                        <form th:action="@{/carrito/agregar}" method="post" class="d-inline">
-                            <input type="hidden" th:value="${p.idProducto}" name="idProducto" />
-                            <button type="button"
-                                    class="btn btn-sm btn-primary"
-                                    th:disabled="${p.existencias < 1}"
-                                    onclick="addCart(this.form)">
-                                <i class="fas fa-cart-plus"></i>
-                            </button>
-                        </form>
+                        <div class="card-header bg-white">
+                            <h5 class="card-title text-center text-truncate mb-0">
+                                [[${p.descripcion}]]
+                            </h5>
+                        </div>
+
+                        <div class="card-body d-flex flex-column">
+                            <p class="card-text text-muted text-truncate">
+                                [[${p.detalle}]]
+                            </p>
+                        </div>
+
+                        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                            <div class="fw-bold">
+                                <span class="text-success h5">
+                                    [[${#numbers.formatCurrency(p.precio)}]]
+                                </span>
+
+                                <span th:if="${p.existencias > 0}" class="badge text-bg-success h5">
+                                    [[${p.existencias}]] unidades
+                                </span>
+
+                                <span th:if="${p.existencias == 0}" class="badge text-bg-danger h5">
+                                    Agotado
+                                </span>
+                            </div>
+
+                            <form th:action="@{/carrito/agregar}" method="post" class="d-inline">
+                                <input type="hidden" th:value="${p.idProducto}" name="idProducto" />
+                                <button type="button"
+                                        class="btn btn-sm btn-primary"
+                                        th:disabled="${p.existencias < 1}"
+                                        onclick="addCart(this.form)">
+                                    <i class="fas fa-cart-plus"></i>
+                                </button>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section th:fragment="consultas" class="row row-cols-4 p-2">
+            <div th:replace="~{consultas/fragmentos :: formConsulta('primary',#{consultas.derivadas}, '/consultas/consultaDerivada')}"/>
+            <div th:replace="~{consultas/fragmentos :: formConsulta('warning',#{consultas.jpql}, '/consultas/consultaJPQL')}"/>
+            <div th:replace="~{consultas/fragmentos :: formConsulta('success',#{consultas.sql}, '/consultas/consultaSQL')}"/>
+            <div class='card'><h5>Su tarea #2</div>
+
+
+
+        </section>
+        <div th:fragment="formConsulta(colorForm, textForm, accionForm)">
+
+            <form method="post"
+                  th:action="@{${accionForm}}"
+                  class="was-validated">
+
+                <div class="card p-2">
+
+                    <div class="card-header text-center text-white"
+                         th:classappend="${'bg-' + colorForm}">
                     </div>
 
                 </div>
-            </div>
-        </div>
-    </section>
 
-</body>
+            </form>
+
+        </div>
+
+    </body>
 </html>
